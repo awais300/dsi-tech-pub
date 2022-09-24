@@ -2,16 +2,22 @@
 
 namespace DSI\TechPub;
 
-defined( 'ABSPATH' ) || exit;
+use DSI\TechPub\User\UserLogin;
+use DSI\TechPub\User\UserMeta;
+use DSI\TechPub\ACF\Acf;
+use DSI\TechPub\Filters\Filters;
+
+defined('ABSPATH') || exit;
 
 /**
  * Class Bootstrap
  * @package DSI\TechPub
  */
 
-class Bootstrap {
+class Bootstrap
+{
 
-	private $version = "1.0.0";
+	private $version = '1.0.0';
 
 	/**
 	 * Instance to call certain functions globally within the plugin.
@@ -19,13 +25,14 @@ class Bootstrap {
 	 * @var _instance
 	 */
 	protected static $_instance = null;
-		
+
 	/**
-	* Construct the plugin.
-	*/
-	public function __construct() {
-		add_action( 'init', array( $this, 'load_plugin' ), 0 );
-    }
+	 * Construct the plugin.
+	 */
+	public function __construct()
+	{
+		add_action('init', array($this, 'load_plugin'), 0);
+	}
 
 	/**
 	 * Main Bootstrap instance.
@@ -35,69 +42,82 @@ class Bootstrap {
 	 * @static
 	 * @return self Main instance.
 	 */
-	public static function instance() {
-		if ( is_null( self::$_instance ) ) {
+	public static function instance()
+	{
+		if (is_null(self::$_instance)) {
 			self::$_instance = new self();
 		}
 		return self::$_instance;
 	}
 
 	/**
-	* Determine which plugin to load.
-	*/
-	public function load_plugin() {
+	 * Determine which plugin to load.
+	 */
+	public function load_plugin()
+	{
 		$this->define_constants();
 		$this->init_hooks();
 	}
 
-    /**
+	/**
 	 * Define WC Constants.
 	 */
-	private function define_constants() {
+	private function define_constants()
+	{
 		// Path related defines
-		$this->define( 'DSI_CUST_PLUGIN_FILE', DSI_CUST_PLUGIN_FILE );
-		$this->define( 'DSI_CUST_PLUGIN_BASENAME', plugin_basename( DSI_CUST_PLUGIN_FILE ) );
-		$this->define( 'DSI_CUST_PLUGIN_DIR_PATH', untrailingslashit( plugin_dir_path( DSI_CUST_PLUGIN_FILE ) ) );
-		$this->define( 'DSI_CUST_PLUGIN_DIR_URL', untrailingslashit( plugins_url( '/', DSI_CUST_PLUGIN_FILE ) ) );
+		$this->define('DSI_CUST_PLUGIN_FILE', DSI_CUST_PLUGIN_FILE);
+		$this->define('DSI_CUST_PLUGIN_BASENAME', plugin_basename(DSI_CUST_PLUGIN_FILE));
+		$this->define('DSI_CUST_PLUGIN_DIR_PATH', untrailingslashit(plugin_dir_path(DSI_CUST_PLUGIN_FILE)));
+		$this->define('DSI_CUST_PLUGIN_DIR_URL', untrailingslashit(plugins_url('/', DSI_CUST_PLUGIN_FILE)));
 	}
 
 	/**
-     * Collection of hooks.
-     */
-    public function init_hooks() {
-        add_action( 'init', array( $this, 'load_textdomain' ) );
-        add_action( 'init', array( $this, 'init' ), 1 );
-
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles') );
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts') );		
-	}
-
-	/**
-	 * Localisation
+	 * Collection of hooks.
 	 */
-	public function load_textdomain() {
-		load_plugin_textdomain( 'dsi-customization', false, dirname( plugin_basename(__FILE__) ) . '/languages/' );
+	public function init_hooks()
+	{
+		add_action('init', array($this, 'load_textdomain'));
+		add_action('init', array($this, 'init'), 1);
+
+		add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
+		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
 	}
 
 	/**
-     * Initialize the plugin.
-     */
-    public function init() {
-    }
+	 * Localisation.
+	 */
+	public function load_textdomain()
+	{
+		load_plugin_textdomain('dsi-customization', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+	}
 
 	/**
-     * Enqueue all styles.
-     */
-	public function enqueue_styles() {
+	 * Initialize the plugin.
+	 */
+	public function init()
+	{
+		new Acf();
+		new Filters();
+		new PageTemplater();
+		new UserLogin();
+		new UserMeta();
+	}
+
+	/**
+	 * Enqueue all styles.
+	 */
+	public function enqueue_styles()
+	{
 		wp_enqueue_style('dsi-customization-frontend', DSI_CUST_PLUGIN_DIR_URL . '/assets/css/dsi-customization-frontend.css', array(), null, 'all');
 	}
 
 
 	/**
-     * Enqueue all scripts.
-     */
-	public function enqueue_scripts() {
-		wp_enqueue_script( 'dsi-customization-frontend', DSI_CUST_PLUGIN_DIR_URL . '/assets/js/dsi-customization-frontend.js', array( 'jquery' ) );
+	 * Enqueue all scripts.
+	 */
+	public function enqueue_scripts()
+	{
+		wp_enqueue_script('dsi-customization-frontend', DSI_CUST_PLUGIN_DIR_URL . '/assets/js/dsi-customization-frontend.js', array('jquery'));
 	}
 
 	/**
@@ -106,10 +126,10 @@ class Bootstrap {
 	 * @param  string $name
 	 * @param  string|bool $value
 	 */
-	public function define( $name, $value ) {
-		if ( ! defined( $name ) ) {
-			define( $name, $value );
+	public function define($name, $value)
+	{
+		if (!defined($name)) {
+			define($name, $value);
 		}
 	}
-
 }
