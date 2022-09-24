@@ -22,6 +22,8 @@
 
 namespace DSI\TechPub;
 
+use DSI\TechPub\User\UserRoles;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -33,3 +35,22 @@ if ( ! defined( 'DSI_CUST_PLUGIN_FILE' ) ) {
 require_once 'vendor/autoload.php';
 
 Bootstrap::instance();
+
+/**
+ * Activate the plugin.
+ */
+function dsi_on_activate()
+{
+    (UserRoles::instance())->add_role();
+}
+register_activation_hook(__FILE__, __NAMESPACE__ . '\\dsi_on_activate');
+
+
+/**
+ * Deactivation hook.
+ */
+function dsi_on_deactivate()
+{
+    (UserRoles::instance())->remove_role();
+}
+register_deactivation_hook(__FILE__, __NAMESPACE__ . '\\dsi_on_deactivate');
