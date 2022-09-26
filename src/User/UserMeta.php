@@ -75,7 +75,7 @@ class UserMeta extends Singleton
     }
 
     /**
-     * Send notification to customer if access is allowed.
+     * Check access and trigger notification to customer if access is allowed.
      *
      * @param \Ac\Column $column
      * @param int $id
