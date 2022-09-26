@@ -5,11 +5,11 @@ namespace DSI\TechPub\ACF;
 defined('ABSPATH') || exit;
 
 /**
- * Class Acf
+ * Class ACF
  * @package DSI\TechPub
  */
 
-class Acf
+class ACF
 {
     /**
      * File upload folder.
@@ -17,6 +17,13 @@ class Acf
      * @var UPLOAD_DIR
      */
     public const UPLOAD_DIR = '/dsi-tech-pub/files';
+
+    /**
+     * ACF upload key name.
+     *
+     * @var UPLOAD_FIELD_KEY
+     */
+    public const UPLOAD_FIELD_KEY = 'upload_file';
 
     /**
      * Construct the plugin.
@@ -103,7 +110,7 @@ class Acf
     }
 
     /**
-     * Init acf field group.
+     * Init ACF field group.
      */
     public function init_acf_custom_fields()
     {
