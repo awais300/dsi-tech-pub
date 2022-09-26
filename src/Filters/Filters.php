@@ -2,6 +2,7 @@
 
 namespace DSI\TechPub\Filters;
 
+use ACP\Helper\Select\Group\UserRole;
 use DSI\TechPub\Singleton;
 use DSI\TechPub\TemplateLoader;
 use DSI\TechPub\User\UserRoles;
@@ -51,9 +52,10 @@ class Filters extends Singleton
     public const PRODUCTS_PER_PAGE = 2;
 
     /**
-     * Distributor plus categories.
+     * Distributor plus categories. 
+     * Contains list of cateogry slugs.
      *
-     * @var $distributor_plus_categories
+     * @array $distributor_plus_categories
      */
     public $distributor_plus_categories = array(
         'music',
@@ -168,7 +170,7 @@ class Filters extends Singleton
         unset($categories['uncategorized']);
 
         // Admin or Staff employee have access to all categories.
-        if ((UserRoles::get_instance())->is_staff_user() && 0) {
+        if (current_user_can('manage_options') || (UserRoles::get_instance())->is_staff_user()) {
             return $categories;
         }
 
@@ -192,7 +194,7 @@ class Filters extends Singleton
         $search_param = array_filter($search_param);
         $paged = (get_query_var('paged')) ? absint(get_query_var('paged')) : 1;
 
-        if (empty($search_param) && 0) {
+        if (empty($search_param)) {
             $args = array(
                 'status'            => array('publish'),
                 'category'          => array_keys($this->get_categories()),
@@ -305,7 +307,9 @@ class Filters extends Singleton
             // Get products based on the found IDs.
             $product_category = array();
             if (isset($search_param['s_category']) && !empty($search_param['s_category'])) {
-                $product_category = $search_param['s_category'];
+                if ($this->is_category_allowed_to_current_user($search_param['s_category'])) {
+                    $product_category = $search_param['s_category'];
+                }
             }
 
             $args = array(
@@ -332,14 +336,36 @@ class Filters extends Singleton
      * @param WP_Query $wp_query
      * @return string
      **/
-    public function add_like_clause_for_title_and_description($where, &$wp_query)
+    public function add_like_clause_for_title_and_description($where, $wp_query)
     {
         global $wpdb;
         if ($search_term = $wp_query->get('title_and_desc')) {
-            $where .= ' OR (' . $wpdb->posts . '.post_title LIKE \'%' . esc_sql(like_escape($search_term)) . '%\'';
-            $where .= ' OR ' . $wpdb->posts . '.post_content LIKE \'%' . esc_sql(like_escape($search_term)) . '%\')';
+            $where .= ' OR (' . $wpdb->posts . '.post_title LIKE \'%' . esc_sql($wpdb->esc_sql($search_term)) . '%\'';
+            $where .= ' OR ' . $wpdb->posts . '.post_content LIKE \'%' . esc_sql($wpdb->esc_sql($search_term)) . '%\')';
         }
 
         return $where;
+    }
+
+    /**
+     * Check if category belongs allowed to current logged in user.
+     * @param  string $category
+     * @return boolean
+     */
+    public function is_category_allowed_to_current_user($category)
+    {
+        if (
+            current_user_can('manage_options') ||
+            (UserRoles::get_instance())->is_distributor_plus_user() ||
+            (UserRoles::get_instance())->is_staff_user()
+        ) {
+            return true;
+        } else {
+            if (in_array($category, $this->distributor_plus_categories)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
     }
 }
