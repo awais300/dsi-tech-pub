@@ -4,7 +4,7 @@ namespace DSI\TechPub;
 
 use DSI\TechPub\User\UserLogin;
 use DSI\TechPub\User\UserMeta;
-use DSI\TechPub\ACF\Acf;
+use DSI\TechPub\ACF\ACF;
 use DSI\TechPub\Filters\Filters;
 
 defined('ABSPATH') || exit;
@@ -96,11 +96,13 @@ class Bootstrap
 	 */
 	public function init()
 	{
-		new Acf();
-		new Filters();
+		new ACF();
 		new PageTemplater();
+		new Filters();
 		new UserLogin();
 		new UserMeta();
+		new Order();
+		new TechPubLib();
 	}
 
 	/**
