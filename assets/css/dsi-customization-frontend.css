@@ -1,1 +1,85 @@
-/*CSS goes here*/
+.dsi-tech-pub-lib {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.dsi-tech-pub-lib .dsi-search {
+    background-color: #4D4D4D;
+}
+
+.dsi-tech-pub-lib .dsi-keyword-search {
+    display: grid;
+    place-items: center;
+}
+
+.dsi-tech-pub-lib .dsi-search-filters {
+    background-color: #F6F6F6;
+}
+
+.dsi-tech-pub-lib .dsi-search-button {
+    position: relative;
+}
+
+.dsi-tech-pub-lib .dsi-search-button button {
+    right: 55px;
+    top: 30px;
+}
+
+.dsi-tech-pub-lib .products-list {
+    padding: 30px 50px !important;
+}
+
+.dsi-tech-pub-lib .product-image {
+    padding-right: 16px;
+}
+
+.dsi-tech-pub-lib .dsi-content {
+    margin: 50px 0;
+}
+
+.dsi-tech-pub-lib .product-info p {
+    margin: 0 0 10px 0;
+}
+
+.dsi-tech-pub-lib .product-info p.info {
+    margin: 0 0 5px 0;
+}
+
+.dsi-tech-pub-lib a {
+    color: rgba(255, 255, 255, 0.85);
+    border-color: #d11329;
+    background-color: #d11329;
+}
+
+.dsi-tech-pub-lib a.text {
+    color: #d60707;
+    border-color: none;
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+}
+
+.dsi-tech-pub-lib .instructions a.text {
+    color: #d60707;
+    border-color: none;
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+}
+
+.dsi-tech-pub-lib .dsi-pagination a {
+    color: black;
+    border-color: none;
+    background-color: transparent;
+}
+
+.dsi-tech-pub-lib .dsi-pagination .page-numbers.current {
+    color: rgba(255, 255, 255, 0.85);
+    border-color: #d11329;
+    background-color: #d11329;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+.dsi-tech-pub-lib p.dsi-price {
+    color: #d60707;
+}
