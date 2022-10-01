@@ -49,11 +49,11 @@ class Filters extends Singleton
      *
      * @var PRODUCTS_PER_PAGE
      */
-    public const PRODUCTS_PER_PAGE = 2;
+    public const PRODUCTS_PER_PAGE = 1;
 
     /**
      * Distributor plus categories. 
-     * Contains list of cateogry slugs.
+     * Contains list of category slugs.
      *
      * @array $distributor_plus_categories
      */
@@ -71,6 +71,7 @@ class Filters extends Singleton
 
     /**
      * Get aircraft make values.
+     * 
      * @return array
      */
     public function get_aircraft_make()
@@ -98,7 +99,7 @@ class Filters extends Singleton
 
         $data = array();
         foreach ($result as $post) {
-            $data[] = $post->aircraft_make;
+            $data[$post->aircraft_make] = $post->aircraft_make;
         }
 
         $data = array_unique($data);
@@ -107,6 +108,7 @@ class Filters extends Singleton
 
     /**
      * Get aircraft model values.
+     * 
      * @return array
      */
     public function get_aircraft_model()
@@ -134,7 +136,7 @@ class Filters extends Singleton
 
         $data = array();
         foreach ($result as $post) {
-            $data[] = $post->aircraft_model;
+            $data[$post->aircraft_model] = $post->aircraft_model;
         }
 
         $data = array_unique($data);
@@ -186,10 +188,11 @@ class Filters extends Singleton
 
     /**
      * Get tech pub products optionally by search too.
+     * 
      * @param array $search_param
      * @return WC_Product
      **/
-    function get_tech_pub_products($search_param = array())
+    function get_products($search_param = array())
     {
         $search_param = array_filter($search_param);
         $paged = (get_query_var('paged')) ? absint(get_query_var('paged')) : 1;
@@ -205,15 +208,13 @@ class Filters extends Singleton
                 'paginate'          => true,
             );
             $result = wc_get_products($args);
-            $products = $result->products;
-            return $products;
+            return $result;
         } else {
 
             $s_keyword = '';
             $s_aircraft_make = '';
             $s_aircraft_model = '';
             $s_category = '';
-            $product_ids = array();
 
             // If keyword/text is set.
             if (isset($search_param['s_keyword']) && !empty($search_param['s_keyword'])) {
@@ -324,6 +325,7 @@ class Filters extends Singleton
             );
 
             $result = wc_get_products($args);
+            return $result;
             $products = $result->products;
             return $products;
         }
@@ -340,8 +342,8 @@ class Filters extends Singleton
     {
         global $wpdb;
         if ($search_term = $wp_query->get('title_and_desc')) {
-            $where .= ' OR (' . $wpdb->posts . '.post_title LIKE \'%' . esc_sql($wpdb->esc_sql($search_term)) . '%\'';
-            $where .= ' OR ' . $wpdb->posts . '.post_content LIKE \'%' . esc_sql($wpdb->esc_sql($search_term)) . '%\')';
+            $where .= ' OR (' . $wpdb->posts . '.post_title LIKE \'%' . esc_sql($search_term) . '%\'';
+            $where .= ' OR ' . $wpdb->posts . '.post_content LIKE \'%' . esc_sql($search_term) . '%\')';
         }
 
         return $where;
@@ -349,6 +351,7 @@ class Filters extends Singleton
 
     /**
      * Check if category belongs allowed to current logged in user.
+     * 
      * @param  string $category
      * @return boolean
      */
