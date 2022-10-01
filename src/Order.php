@@ -22,11 +22,18 @@ class Order extends Singleton
     public const META_ORDER_ITEM_MEDIA_ID = '_order_item_media_id';
 
     /**
-     * Holds unix timestamp when access granted (product is purchased). 
+     * Holds UNIX timestamp when access granted (product is purchased). 
      *
      * @var META_ORDER_ITEM_MEDIA_ACCESS_TIME
      */
     public const META_ORDER_ITEM_MEDIA_ACCESS_TIME = '_order_item_media_access_time';
+
+    /**
+     * Orders cache key.
+     *
+     * @var CACHE_ORDERS
+     */
+    public const CACHE_ORDERS = 'dsi_cache_orders';
 
     /**
      * Number of hours to allow for file access. 
@@ -38,11 +45,13 @@ class Order extends Singleton
     /**
      * Allowed order statuses list.
      *
-     * @var $allowed_order_statuses
+     * @array $allowed_order_statuses
      */
     public $allowed_order_statuses = array(
         'wc-processing',
         'wc-on-hold',
+        'wc-completed',
+        'wc-pending',
     );
 
     /**
@@ -87,9 +96,9 @@ class Order extends Singleton
     public function has_user_access_to_media($product_id)
     {
         // Retail user only can access media if they have ordered/purchased.
-        /* if ((UserRoles::get_instance())->is_retail_user() === false) {
+        if ((UserRoles::get_instance())->is_retail_user() === false) {
             return false;
-        }*/
+        }
 
         $args = array(
             'customer_id' => get_current_user_id(),
@@ -97,7 +106,15 @@ class Order extends Singleton
             'limit' => -1,
         );
 
-        $orders = wc_get_orders($args);
+        // Per user cache key.
+        $cache_key = self::CACHE_ORDERS . '_' . get_current_user_id();
+
+        // Optimize query.
+        $orders = wp_cache_get($cache_key);
+        if (false === $orders) {
+            $orders = wc_get_orders($args);
+            wp_cache_set($cache_key, $orders, '', 10 * MINUTE_IN_SECONDS);
+        }
 
         if (empty($orders)) {
             return false;
@@ -113,10 +130,6 @@ class Order extends Singleton
                     $unix_time = $item->get_meta(self::META_ORDER_ITEM_MEDIA_ACCESS_TIME, true);
                     $media_id = $item->get_meta(self::META_ORDER_ITEM_MEDIA_ID, true);
 
-                    if (empty($unix_time) || empty($media_id)) {
-                        return false;
-                    }
-
                     if ($media_id == $media_id_in_post && $this->is_access_expired($unix_time)) {
                         return true;
                     }
@@ -127,16 +140,24 @@ class Order extends Singleton
         return false;
     }
 
+    /**
+     * Display something on on front facing user dashboard under order page.
+     * 
+     * @param  int $item_id
+     * @param  WC_Order_Item $item
+     * @param  WC_Order $order
+     * @param  boolean $bool
+     */
     public function order_item_meta_start($item_id, $item, $order, $bool)
     {
         if (is_admin()) {
             return;
         }
 
-         // Retail user only can access media if they have ordered/purchased.
-        /* if ((UserRoles::get_instance())->is_retail_user() === false) {
-            return false;
-        }*/
+        // Retail user only can access media if they have ordered/purchased.
+        if ((UserRoles::get_instance())->is_retail_user() === false) {
+            return;
+        }
 
         if (is_wc_endpoint_url('view-order')) {
             $order_item_id = $item->get_product_id();
@@ -146,13 +167,9 @@ class Order extends Singleton
                 $unix_time = $item->get_meta(self::META_ORDER_ITEM_MEDIA_ACCESS_TIME, true);
                 $media_id = $item->get_meta(self::META_ORDER_ITEM_MEDIA_ID, true);
 
-                if (empty($unix_time) || empty($media_id)) {
-                    return;
-                }
-
                 if ($media_id == $media_id_in_post && $this->is_access_expired($unix_time)) {
-                    // todo.
-                    // Get download button.
+                    $media_url = (TechPubLib::get_instance())->get_media_url($media_id);
+                    echo " : <a href='{$media_url}'>Download tech publication File</a>";
                 }
             }
         }
