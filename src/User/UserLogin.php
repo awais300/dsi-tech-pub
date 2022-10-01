@@ -2,6 +2,7 @@
 
 namespace DSI\TechPub\User;
 
+use DSI\TechPub\TechPubLib;
 use DSI\TechPub\TemplateLoader;
 use DSI\TechPub\User\UserMeta;
 use DSI\TechPub\User\UserRoles;
@@ -64,6 +65,7 @@ class UserLogin
     public function __construct()
     {
         $this->loader = TemplateLoader::get_instance();
+        add_filter('woocommerce_login_redirect', array($this, 'login_redirect'), 30, 2);
         add_action('user_register', array($this, 'after_user_register'), 10, 2);
         add_action('woocommerce_register_form_end', array($this, 'register_message'));
         add_filter('wp_authenticate_user', array($this, 'authenticate_retail_user'));
@@ -77,15 +79,20 @@ class UserLogin
      */
     public function after_user_register($user_id, $userdata)
     {
-        (UserMeta::get_instance())->save_user_meta($user_id, UserMeta::META_TECH_PUB_ACCESS_ALLOWED, self::REGISTER_STATUS_PENDING);
-        (UserMeta::get_instance())->save_user_meta($user_id, UserMeta::META_TECH_PUB_ACCESS_EXPIRATION_DATE, '');
-        (UserRoles::get_instance())->set_user_role($user_id, UserRoles::ROLE_DSI_RETAIL);
+        if (is_admin() && isset($_POST['action']) && $_POST['action'] == 'createuser') {
+            (UserMeta::get_instance())->save_user_meta($user_id, UserMeta::META_TECH_PUB_ACCESS_ALLOWED, self::REGISTER_STATUS_PENDING);
+            (UserMeta::get_instance())->save_user_meta($user_id, UserMeta::META_TECH_PUB_ACCESS_EXPIRATION_DATE, '');
+        } else {
+            (UserMeta::get_instance())->save_user_meta($user_id, UserMeta::META_TECH_PUB_ACCESS_ALLOWED, self::REGISTER_STATUS_PENDING);
+            (UserMeta::get_instance())->save_user_meta($user_id, UserMeta::META_TECH_PUB_ACCESS_EXPIRATION_DATE, '');
 
-        $this->new_user_admin_notification($userdata);
+            (UserRoles::get_instance())->set_user_role($user_id, UserRoles::ROLE_DSI_RETAIL);
+            $this->new_user_admin_notification($userdata);
 
-        wp_logout();
-        wp_redirect('/' . self::MY_ACCOUNT_PAGE . '/?' . self::REGISTER_STATUS_KEY . '=pending');
-        exit;
+            wp_logout();
+            wp_redirect('/' . self::MY_ACCOUNT_PAGE . '/?' . self::REGISTER_STATUS_KEY . '=pending');
+            exit;
+        }
     }
 
     /**
@@ -104,6 +111,7 @@ class UserLogin
 
     /**
      * Send admin email notification when new user register on site.
+     * 
      * @param array $userdata
      */
     public function new_user_admin_notification($userdata)
@@ -151,5 +159,21 @@ class UserLogin
         }
 
         return $user;
+    }
+
+    /**
+     * Redirect user after login.
+     * 
+     * @param  string $redirect
+     * @param  WP_User $user
+     * @return string
+     */
+    public function login_redirect($redirect, $user)
+    {
+        if (!(UserRoles::get_instance())->is_retail_user()) {
+            $redirect = trailingslashit(get_site_url()) . TechPubLib::TECH_PUB_PAGE;
+        }
+
+        return $redirect;
     }
 }
