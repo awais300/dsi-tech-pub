@@ -1,50 +1,170 @@
 <?php
+
 namespace DSI\TechPub;
 
-/**
- * Template Name: DSI Tech Pub Library
- *
- * This file is loaded via hooks and set as Page Template via hooks as well.
- * The file is residing in /plugin/templates/woocommerce/dsi-tech-pub-library.php
- * Though its a regular page template but its being put inside the "woocommerce" directory as 
- * its will be displaying woocommerce products.
- * 
- **/
-get_header();
+use DSI\TechPub\User\UserRoles;
 ?>
 
 <?php
-$products = (TechPubLib::get_instance())->get_tech_pub_products();
+$tech_pub_lib = (TechPubLib::get_instance());
+$products = '';
+if (!empty($product_query_obj)) {
+	$products = $product_query_obj->products;
+}
+
+$helper = (Helper::get_instance());
 ?>
 
-<div id="primary" <?php astra_primary_class(); ?>>
+<div class="dsi-tech-pub-lib">
+	<form name="dsi-search-form" id="dsi-search-form" action="" method="get">
+		<section class="dsi-search w3-row w3-padding-48">
+			<div class="dsi-keyword-search w3-col s12">
+				<input type="text" value="<?php echo (isset($_GET['keyword'])) ? $_GET['keyword'] : ''; ?>" class="w3-col s8" name="keyword" id="keyword" placeholder="Search..." />
+			</div>
+		</section>
 
-        <?php astra_primary_content_top(); ?>
+		<section class="dsi-search-filters w3-row w3-padding-48">
 
-        <?php astra_content_page_loop(); ?>
+			<div class="dsi-label">
+				<div class="heading w3-container">
+					<h3>Select by Type of Content:</h3>
+				</div>
+			</div>
 
-        <?php
-                $button_url = get_site_url() . '?quantity=1&add-to-cart=';
-                $download_url = get_site_url() . '?tech_pub_file_id=';
-                foreach($products as $product) {
-                        echo "<br/>";
-                        echo $product->get_name();
-                        echo "<br/>";
+			<div class="filters-list w3-row w3-container">
+				<div class="filter filter-category w3-col m4 w3-padding-16">
+					<?php
+					$first_element = array('' => '--Select Category--');
+					$filter_name = 'category';
+					$extra = array('id' => $filter_name, 'class' => 'w3-col m11');
+					$options = $first_element + $category_options;
+					$selected_item = (isset($_GET[$filter_name])) ? $_GET[$filter_name] : '';
+					$selected = [$selected_item];
+					echo $helper->form_dropdown($filter_name, $options, $selected, $extra);
+					?>
 
-                        $add_url = $button_url . $product->get_id();
-                        $id = $product->get_meta('upload_file', true);
-                        $down_url = $download_url . $id;
-                        
-                        echo "<a href='{$add_url}'>Add to Cart</a>";
-                        echo "<br/>";
-                        echo "<a href='{$down_url}'>Download File</a>";
+				</div>
 
-                }
-        ?>
+				<div class="filter filter-make w3-col m4 w3-padding-16">
+					<?php
+					$first_element = array('' => '--Select Aircraft Make--');
+					$filter_name = 'aircraft_make';
+					$extra = array('id' => $filter_name, 'class' => 'w3-col m11');
+					$options = $first_element + $make_options;
+					$selected_item = (isset($_GET[$filter_name])) ? $_GET[$filter_name] : '';
+					$selected = [$selected_item];
+					echo $helper->form_dropdown($filter_name, $options, $selected, $extra);
+					?>
+				</div>
 
-        <?php astra_primary_content_bottom(); ?>
+				<div class="filter filter-model w3-col m4 w3-padding-16">
+					<?php
+					$first_element = array('' => '--Select Aircraft Model--');
+					$filter_name = 'aircraft_model';
+					$extra = array('id' => $filter_name, 'class' => 'w3-col m11');
+					$options = $first_element + $model_options;
+					$selected_item = (isset($_GET[$filter_name])) ? $_GET[$filter_name] : '';
+					$selected = [$selected_item];
+					echo $helper->form_dropdown($filter_name, $options, $selected, $extra);
+					?>
+				</div>
+			</div>
+			<div class="dsi-search-button w3-row w3-padding-16 w3-container">
+				<button class="w3-display-right" type="submit" name="dsi-search" value="dsi-search">Search</button>
+			</div>
+		</section>
+		<?php wp_nonce_field('search-form-nonce', '_wpnonce', false); ?>
+	</form>
 
-    </div><!-- #primary -->
+	<section class="dsi-content w3-row w3-padding-16 w3-border">
+		<div class="prodcuts-list w3-row w3-container w3-padding-large">
+			<?php if (!empty($products)) : ?>
+				<?php foreach ($products as $product) : ?>
+					<div id="<?php echo $product->get_id(); ?>" class="single-product w3-col w3-padding-16">
+						<div class="product left-section w3-col m10">
+							<div class="product-image w3-col m4">
+								<img class="w3-image" src="<?php echo DSI_CUST_PLUGIN_DIR_URL . '/assets/images/tech-pub.jpg'; ?>" />
+							</div>
+
+							<div class="product-info w3-col m8 ">
+								<h4><?php echo $product->get_name(); ?></h4>
+								<p><?php echo $product->get_description(); ?></p>
+
+								<?php if ($item = $product->get_meta('part_numbers')) : ?>
+									<p class="info"><strong>Part Numbers: </strong><?php echo $item; ?></p>
+								<?php endif ?>
+
+								<?php if ($item = $product->get_meta('user_guide_number')) : ?>
+									<p class="info"><strong>User Guide Number: </strong><?php echo $item; ?></p>
+								<?php endif ?>
+
+								<?php if ($item = $product->get_meta('revision_number')) : ?>
+									<p class="info"><strong>Revision Number: </strong><?php echo $item; ?></p>
+								<?php endif ?>
+
+								<?php if ($item = $product->get_meta('supported_products')) : ?>
+									<p class="info"><strong>Supported Products: </strong><?php echo $item; ?></p>
+								<?php endif ?>
+
+								<?php if ($item = $product->get_meta('aircraft_make')) : ?>
+									<p class="info"><strong>Aircraft Make: </strong><?php echo $item; ?></p>
+								<?php endif ?>
+
+								<?php if ($item = $product->get_meta('aircraft_model')) : ?>
+									<p class="info"><strong>Aircraft Model: </strong><?php echo $item; ?></p>
+								<?php endif ?>
+							</div>
+						</div>
+
+						<div class="product right-section w3-col m2 w3-padding-16">
+							<?php $access = $tech_pub_lib->is_user_has_access($product->get_id()); ?>
+
+							<?php if (!is_user_logged_in()) : ?>
+								<div class="instructions">
+									<p><a class="text" href="<?php echo wc_get_account_endpoint_url('dashboard'); ?>">Login</a> as distributor or <a class="text" href="<?php echo wc_get_account_endpoint_url('dashboard'); ?>">register</a> for a retail customer account.</p>
+								</div>
+
+							<?php elseif (
+								false === $access &&
+								((UserRoles::get_instance())->is_distributor_plus_user() || (UserRoles::get_instance())->is_distributor_user())
+							) : ?>
+								<div class="instructions">
+									<p>Call us at <a class="text" href="tel:<?php echo $tech_pub_lib->phone_numer; ?>"><?php echo $tech_pub_lib->phone_numer; ?></a></p>
+								</div>
 
 
-<?php get_footer(); ?>
+							<?php elseif (true === $access) : ?>
+								<div class="instructions">
+									<a href="<?php echo $tech_pub_lib->get_media_url($product->get_meta('upload_file')); ?>" class="elementor-button-link elementor-button elementor-size-sm">Download</a>
+								</div>
+
+
+							<?php elseif (false === $access && (UserRoles::get_instance())->is_retail_user()) : ?>
+								<div class="instructions">
+									<p class="dsi-price">$<?php echo $product->get_price(); ?></p>
+									<a href="<?php echo $tech_pub_lib->get_product_add_url($product->get_id()); ?>" class="elementor-button-link elementor-button elementor-size-sm">Add to Cart</a>
+								</div>
+							<?php endif; ?>
+
+						</div>
+					</div>
+				<?php endforeach; ?>
+			<?php else : ?>
+				<div class="w3-row">
+					<div class="w3-container w3-col s12">
+						<p>Sorry no product found.</p>
+					</div>
+				</div>
+			<?php endif; ?>
+		</div>
+		<div class="dsi-pagination w3-row">
+			<div class="w3-center">
+				<div class="w3-bar w3-xlarge">
+					<div class="s4"></div>
+					<div class="s4"><?php echo $tech_pub_lib->get_pagination($product_query_obj); ?></div>
+					<div class="s4"></div>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
