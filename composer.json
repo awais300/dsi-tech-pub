@@ -1,14 +1,13 @@
 {
-  "name": "dsi/dsi-tech-pub",
-  "license": "GPL-3.0",
-  "require": {
-  },
-  "autoload": {
-    "psr-4": {
-      "DSI\\TechPub\\": "src/"
-    }
-  }
+	"name": "dsi/dsi-tech-pub",
+	"license": "GPL-3.0",
+	"require":
+	{},
+	"autoload":
+	{
+		"psr-4":
+		{
+			"DSI\\TechPub\\": "src/"
+		}
+	}
 }
-
-
-
