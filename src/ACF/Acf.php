@@ -64,10 +64,6 @@ class ACF
      */
     public function file_upload_directory($param)
     {
-        error_log(print_r($param, true));
-        error_log(print_r($_POST, true));
-        error_log(print_r($_FILES, true));
-
         $upload_dir = self::UPLOAD_DIR;
         $param['path'] = $param['basedir'] . $upload_dir;
         $param['url'] = $param['baseurl'] . $upload_dir;
