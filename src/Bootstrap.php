@@ -84,7 +84,7 @@ class Bootstrap
 	}
 
 	/**
-	 * Localisation.
+	 * Localization.
 	 */
 	public function load_textdomain()
 	{
@@ -97,7 +97,6 @@ class Bootstrap
 	public function init()
 	{
 		new ACF();
-		new PageTemplater();
 		new Filters();
 		new UserLogin();
 		new UserMeta();
@@ -110,7 +109,11 @@ class Bootstrap
 	 */
 	public function enqueue_styles()
 	{
-		wp_enqueue_style('dsi-customization-frontend', DSI_CUST_PLUGIN_DIR_URL . '/assets/css/dsi-customization-frontend.css', array(), null, 'all');
+		global $post;
+		if ($post->post_name == TechPubLib::TECH_PUB_PAGE) {
+			wp_enqueue_style('dsi-w3', DSI_CUST_PLUGIN_DIR_URL . '/assets/css/w3.css', array(), null, 'all');
+			wp_enqueue_style('yips-customization-frontend', DSI_CUST_PLUGIN_DIR_URL . '/assets/css/dsi-customization-frontend.css', array(), null, 'all');
+		}
 	}
 
 
@@ -119,7 +122,10 @@ class Bootstrap
 	 */
 	public function enqueue_scripts()
 	{
-		wp_enqueue_script('dsi-customization-frontend', DSI_CUST_PLUGIN_DIR_URL . '/assets/js/dsi-customization-frontend.js', array('jquery'));
+		global $post;
+		if ($post->post_name == TechPubLib::TECH_PUB_PAGE) {
+			wp_enqueue_script('dsi-customization-frontend', DSI_CUST_PLUGIN_DIR_URL . '/assets/js/dsi-customization-frontend.js', array('jquery'));
+		}
 	}
 
 	/**
