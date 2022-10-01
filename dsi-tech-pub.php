@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Plugin Name: DSI Tech Publication
- * Description: Plugin description
- * Author: Muhammad Awais
+ * Description: Access tech publication library based on different roles.
+ * Author: EffectWebAgency / Muhammad Awais
  * Version: 1.0.0
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,12 +25,12 @@ namespace DSI\TechPub;
 
 use DSI\TechPub\User\UserRoles;
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly.
 }
 
-if ( ! defined( 'DSI_CUST_PLUGIN_FILE' ) ) {
-    define( 'DSI_CUST_PLUGIN_FILE', __FILE__ );
+if (!defined('DSI_CUST_PLUGIN_FILE')) {
+	define('DSI_CUST_PLUGIN_FILE', __FILE__);
 }
 
 require_once 'vendor/autoload.php';
@@ -41,7 +42,7 @@ Bootstrap::instance();
  */
 function dsi_on_activate()
 {
-    (UserRoles::instance())->add_role();
+	(UserRoles::instance())->add_role();
 }
 register_activation_hook(__FILE__, __NAMESPACE__ . '\\dsi_on_activate');
 
@@ -51,6 +52,6 @@ register_activation_hook(__FILE__, __NAMESPACE__ . '\\dsi_on_activate');
  */
 function dsi_on_deactivate()
 {
-    (UserRoles::instance())->remove_role();
+	(UserRoles::instance())->remove_role();
 }
 register_deactivation_hook(__FILE__, __NAMESPACE__ . '\\dsi_on_deactivate');
