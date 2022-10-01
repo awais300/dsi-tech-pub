@@ -99,7 +99,8 @@ class UserMeta extends Singleton
     }
 
     /**
-     * Send customer email that access is granted. 
+     * Send customer email that access is granted.
+     * 
      * @param  int $user_id
      */
     public function customer_allowed_access_notification($user_id)
@@ -125,6 +126,7 @@ class UserMeta extends Singleton
 
     /**
      * Set access based on expiration date.
+     * 
      * @param  int $user_id
      */
     public function update_tech_access_by_expiration_date($user_id)
