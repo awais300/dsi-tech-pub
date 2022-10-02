@@ -135,7 +135,7 @@ $helper = (Helper::get_instance());
 
 							<?php elseif (true === $access) : ?>
 								<div class="instructions">
-									<a href="<?php echo $tech_pub_lib->get_media_url($product->get_meta('upload_file')); ?>" class="elementor-button-link elementor-button elementor-size-sm">Download</a>
+									<a href="<?php echo $tech_pub_lib->get_media_url($product->get_meta('upload_file'), $product->get_id()); ?>" class="elementor-button-link elementor-button elementor-size-sm">Download</a>
 								</div>
 
 

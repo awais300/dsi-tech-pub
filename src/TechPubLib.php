@@ -54,6 +54,13 @@ class TechPubLib extends Singleton
     public const DOWNLOAD_KEY = 'tech_pub_file_id';
 
     /**
+     * The product ID key.
+     *
+     * @var PRODUCT_ID
+     */
+    public const PRODUCT_ID = 'tech_pub_product_id';
+
+    /**
      * Construct the plugin.
      */
     public function __construct()
@@ -174,12 +181,7 @@ class TechPubLib extends Singleton
     }
 
     /**
-     * Download file.
-     * 
-     * This function should only be called after permission check. e.g. 
-     * if(is_user_has_access($id)) {
-     *     download_media();
-     * }
+     * Download file if user has permission.
      * 
      **/
     public function download_media()
@@ -190,7 +192,10 @@ class TechPubLib extends Singleton
 
         if (
             isset($_GET[self::DOWNLOAD_KEY]) &&
-            !empty($_GET[self::DOWNLOAD_KEY])
+            !empty($_GET[self::DOWNLOAD_KEY]) &&
+
+            isset($_GET[self::PRODUCT_ID]) &&
+            !empty($_GET[self::PRODUCT_ID])
         ) {
             // Nonce verification.
             if (!wp_verify_nonce($_GET['_wpnonce'], 'media-url-nonce')) {
@@ -209,7 +214,12 @@ class TechPubLib extends Singleton
                 $this->unauthorized();
             }
 
-            (Helper::get_instance())->force_download($url);
+            $product_id = $_GET[self::PRODUCT_ID];
+            if ($this->is_user_has_access($product_id)) {
+                (Helper::get_instance())->force_download($url);
+            } else {
+                $this->unauthorized();
+            }
         }
     }
 
@@ -298,7 +308,7 @@ class TechPubLib extends Singleton
      * @param int $media_id
      * @return string
      **/
-    public function get_media_url($media_id)
+    public function get_media_url($media_id, $product_id)
     {
         if (empty($media_id)) {
             return 'javascript:void(0);';
@@ -306,6 +316,7 @@ class TechPubLib extends Singleton
 
         $data = array(
             self::DOWNLOAD_KEY => $media_id,
+            self::PRODUCT_ID => $product_id,
             '_wpnonce' => wp_create_nonce('media-url-nonce'),
         );
 
