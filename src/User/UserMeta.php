@@ -41,7 +41,7 @@ class UserMeta extends Singleton
     public function __construct()
     {
         $this->loader = TemplateLoader::get_instance();
-        add_action('acp/editing/saved', array($this, 'on_tech_pub_access'), 10, 3);
+        add_action('acp/editing/saved', array($this, 'on_tech_pub_access_meta_change'), 10, 3);
     }
 
     /**
@@ -81,7 +81,7 @@ class UserMeta extends Singleton
      * @param int $id
      * @param  mixed $value
      **/
-    public function on_tech_pub_access(\AC\Column $column, $id, $value)
+    public function on_tech_pub_access_meta_change(\AC\Column $column, $id, $value)
     {
         if ($column instanceof \AC\Column\CustomField && self::META_TECH_PUB_ACCESS_ALLOWED === $column->get_meta_key() && 'user' === $column->get_meta_type()) {
 
