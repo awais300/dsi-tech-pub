@@ -102,6 +102,7 @@ class Bootstrap
 		new UserMeta();
 		new Order();
 		new TechPubLib();
+		//new Test();
 	}
 
 	/**
