@@ -59,17 +59,8 @@ class Order extends Singleton
      */
     public function __construct()
     {
-        //add_action('init', array($this, 'test'));
         add_action('woocommerce_checkout_create_order_line_item', array($this, 'checkout_create_order_line_item'), 20, 4);
         add_action('woocommerce_order_item_meta_start', array($this, 'order_item_meta_start'), 20, 4);
-    }
-
-    function test()
-    {
-        if (is_admin()) {
-            return;
-        }
-        $this->has_user_access_to_media('');
     }
 
     /**
@@ -95,6 +86,10 @@ class Order extends Singleton
      */
     public function has_user_access_to_media($product_id)
     {
+        if(empty($product_id)){
+            return false;
+        }
+
         // Retail user only can access media if they have ordered/purchased.
         if ((UserRoles::get_instance())->is_retail_user() === false) {
             return false;
