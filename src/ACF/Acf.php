@@ -76,32 +76,11 @@ class ACF
      */
     public function create_upload_directory()
     {
-        $this->get_upload_dir();
         $upload_dir = wp_upload_dir();
         $basedir = $upload_dir['basedir'] . self::UPLOAD_DIR;
 
         if (!file_exists($basedir)) {
             mkdir($basedir, 0755, true);
-        }
-    }
-
-    /**
-     * Get upload dir.
-     * 
-     * @return array
-     */
-    public function get_upload_dir()
-    {
-        $dir = array();
-        $upload_dir = wp_upload_dir();
-
-        $dir['basedir'] = $upload_dir['basedir'] . self::UPLOAD_DIR;
-        $dir['baseurl'] = $upload_dir['baseurl'] . self::UPLOAD_DIR;
-
-        if (file_exists($dir['basedir'])) {
-            return $dir;
-        } else {
-            throw new \Exception('File upload path does not exist');
         }
     }
 
