@@ -58,7 +58,7 @@ class Filters extends Singleton
      * @array $distributor_plus_categories
      */
     public $distributor_plus_categories = array(
-        'music',
+        'schematics',
     );
 
     /**
