@@ -27,7 +27,7 @@ $helper = (Helper::get_instance());
 
 			<div class="dsi-label">
 				<div class="heading w3-container">
-					<h3>Select by Type of Content:</h3>
+					<h3>Filter by:</h3>
 				</div>
 			</div>
 
@@ -129,7 +129,7 @@ $helper = (Helper::get_instance());
 								((UserRoles::get_instance())->is_distributor_plus_user() || (UserRoles::get_instance())->is_distributor_user())
 							) : ?>
 								<div class="instructions">
-									<p>Call us at <a class="text" href="tel:<?php echo $tech_pub_lib->phone_numer; ?>"><?php echo $tech_pub_lib->phone_numer; ?></a></p>
+									<p>Call us at to renew your subscription: <a class="text" href="tel:18773745521">(877) 374-5521</a></p>
 								</div>
 
 
@@ -152,7 +152,7 @@ $helper = (Helper::get_instance());
 			<?php else : ?>
 				<div class="w3-row">
 					<div class="w3-container w3-col s12">
-						<p>Sorry no product found.</p>
+						<p>Sorry, no items match your search criteria.</p>
 					</div>
 				</div>
 			<?php endif; ?>
