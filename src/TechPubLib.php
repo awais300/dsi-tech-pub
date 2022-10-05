@@ -32,13 +32,6 @@ class TechPubLib extends Singleton
     public $search_param = array();
 
     /**
-     * Admin phone number.
-     *
-     * @array $phone_numer
-     */
-    public $phone_numer = '111-888-999';
-
-    /**
      * Tech pub page slug.
      *
      * @var TECH_PUB_PAGE
@@ -146,7 +139,9 @@ class TechPubLib extends Singleton
         $search_param = array();
         if (isset($_GET['dsi-search']) && $_GET['dsi-search'] === 'dsi-search') {
             if (!wp_verify_nonce($_GET['_wpnonce'], 'search-form-nonce')) {
-                wp_die('Invalid Access.');
+                //wp_die('Invalid Access.');
+                wp_redirect('/');
+                exit;
             }
 
             $search_param['s_keyword'] = sanitize_text_field($_GET['keyword']);
@@ -333,7 +328,7 @@ class TechPubLib extends Singleton
      **/
     public function go_to_checkout_page($url)
     {
-        return wc_get_checkout_url();
+        return wc_get_cart_url();
     }
 
     /**
