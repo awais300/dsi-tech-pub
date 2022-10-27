@@ -34,14 +34,14 @@ class UserLogin
     /**
      * The register pending status.
      *
-     * @var REGISTER_STATUS
+     * @var REGISTER_STATUS_PENDING
      */
     public const REGISTER_STATUS_PENDING = 0;
 
     /**
      * The register active status.
      *
-     * @var REGISTER_STATUS
+     * @var REGISTER_STATUS_ACTIVE
      */
     public const REGISTER_STATUS_ACTIVE = 1;
 
@@ -67,7 +67,7 @@ class UserLogin
         $this->loader = TemplateLoader::get_instance();
         add_filter('woocommerce_login_redirect', array($this, 'login_redirect'), 30, 2);
         add_action('user_register', array($this, 'after_user_register'), 10, 2);
-        add_action('woocommerce_register_form_end', array($this, 'register_message'));
+        add_action('woocommerce_register_form_start', array($this, 'register_message'));
         add_filter('wp_authenticate_user', array($this, 'authenticate_retail_user'));
     }
 
