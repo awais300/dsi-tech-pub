@@ -127,7 +127,13 @@ if ($is_retail === true) {
 								((UserRoles::get_instance())->is_distributor_plus_user() || (UserRoles::get_instance())->is_distributor_user())
 							) : ?>
 								<div class="instructions">
-									<p>Call us at to renew your subscription: <a class="text" href="tel:18773745521">(877) 374-5521</a></p>
+
+									<?php if ($tech_pub_lib_obj->is_product_specific_to_distributor_plus($product->get_id()) === false) : ?>
+										<p>Distributor Plus Users Only. Please <a class="text" href="/<?php echo TechPubLib::CONTACT_PAGE; ?>">contact us.</a></p>
+									<?php else : ?>
+										<p>Call us at to renew your subscription: <a class="text" href="tel:18773745521">(877) 374-5521</a></p>
+									<?php endif; ?>
+
 								</div>
 							<?php elseif (true === $access) : ?>
 								<div class="instructions">
