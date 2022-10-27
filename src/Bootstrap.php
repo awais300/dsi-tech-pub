@@ -8,27 +8,24 @@ use DSI\TechPub\ACF\ACF;
 use DSI\TechPub\Filters\Filters;
 
 defined('ABSPATH') || exit;
-
 /**
  * Class Bootstrap
  * @package DSI\TechPub
  */
-
 class Bootstrap
 {
-
 	private $version = '1.0.0';
-
 	/**
 	 * Instance to call certain functions globally within the plugin.
 	 *
 	 * @var _instance
 	 */
-	protected static $_instance = null;
 
+	protected static $_instance = null;
 	/**
 	 * Construct the plugin.
 	 */
+
 	public function __construct()
 	{
 		add_action('init', array($this, 'load_plugin'), 0);
@@ -78,7 +75,6 @@ class Bootstrap
 	{
 		add_action('init', array($this, 'load_textdomain'));
 		add_action('init', array($this, 'init'), 1);
-
 		add_action('wp_enqueue_scripts', array($this, 'enqueue_styles'));
 		add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
 	}
@@ -102,7 +98,7 @@ class Bootstrap
 		new UserMeta();
 		new Order();
 		new TechPubLib();
-		//new Test();
+		new Cart();
 	}
 
 	/**
@@ -113,10 +109,9 @@ class Bootstrap
 		global $post;
 		if ($post->post_name == TechPubLib::TECH_PUB_PAGE) {
 			wp_enqueue_style('dsi-w3', DSI_CUST_PLUGIN_DIR_URL . '/assets/css/w3.css', array(), null, 'all');
-			wp_enqueue_style('yips-customization-frontend', DSI_CUST_PLUGIN_DIR_URL . '/assets/css/dsi-customization-frontend.css', array(), null, 'all');
+			wp_enqueue_style('yips-customization-frontend', DSI_CUST_PLUGIN_DIR_URL . '/assets/css/dsi-customization-frontend-v7.css', array(), null, 'all');
 		}
 	}
-
 
 	/**
 	 * Enqueue all scripts.
@@ -132,8 +127,8 @@ class Bootstrap
 	/**
 	 * Define constant if not already set.
 	 *
-	 * @param  string $name
-	 * @param  string|bool $value
+	 * @param string $name
+	 * @param string|bool $value
 	 */
 	public function define($name, $value)
 	{
