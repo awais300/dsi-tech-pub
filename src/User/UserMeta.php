@@ -112,7 +112,7 @@ class UserMeta extends Singleton
         );
 
         $to = $user->user_email;
-        $subject = 'Tech Library Access Granted';
+        $subject = 'Tech Pub Library Access Granted';
         $message = $this->loader->get_template(
             'user-allowed-access-notification.php',
             $data,
