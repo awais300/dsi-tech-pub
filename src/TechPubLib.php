@@ -54,6 +54,13 @@ class TechPubLib extends Singleton
     public const PRODUCT_ID = 'tech_pub_product_id';
 
     /**
+     * The contact page slug
+     *
+     * @var CONTACT_PAGE
+     */
+    public const CONTACT_PAGE = 'contact-us';
+
+    /**
      * Construct the plugin.
      */
     public function __construct()
@@ -92,6 +99,7 @@ class TechPubLib extends Singleton
             'model_options' => (Filters::get_instance())->get_aircraft_model(),
             'product_query_obj' => $product_query_obj,
             'pagination' => $this->get_pagination($product_query_obj),
+            'tech_pub_lib_obj' => $this,
         );
 
         $content = $this->loader->get_template(
@@ -210,6 +218,11 @@ class TechPubLib extends Singleton
             }
 
             $product_id = $_GET[self::PRODUCT_ID];
+
+            if ($this->is_product_specific_to_distributor_plus($product_id) === false) {
+                $this->unauthorized();
+            }
+
             if ($this->is_user_has_access($product_id)) {
                 (Helper::get_instance())->force_download($url);
             } else {
@@ -229,7 +242,7 @@ class TechPubLib extends Singleton
         if (current_user_can('manage_options') || (UserRoles::get_instance())->is_staff_user()) {
             return true;
         } else if ((UserRoles::get_instance())->is_distributor_plus_user() || (UserRoles::get_instance())->is_distributor_user()) {
-            $future_date = (UserMeta::get_instance())->get_user_meta(get_current_user_id(), UserMeta::META_TECH_PUB_ACCESS_EXPIRATION_DATE);
+            //$future_date = (UserMeta::get_instance())->get_user_meta(get_current_user_id(), UserMeta::META_TECH_PUB_ACCESS_EXPIRATION_DATE);
             $access = (UserMeta::get_instance())->get_user_meta(get_current_user_id(), UserMeta::META_TECH_PUB_ACCESS_ALLOWED);
             // /if ($this->is_distributor_type_users_access_expired($future_date) === false && !empty($access)) {
             if (!empty($access)) {
@@ -255,6 +268,32 @@ class TechPubLib extends Singleton
     {
         status_header(403, 'Forbidden');
         exit;
+    }
+
+    /**
+     * Check if role other than distributor plus is trying to access files 
+     * that belongs to category that is only for distributor plus users.
+     * 
+     * @param  int $product_id
+     * @return boolean
+     */
+    public function is_product_specific_to_distributor_plus($product_id)
+    {
+        if (!is_user_logged_in() || empty($product_id)) {
+            return false;
+        }
+
+        if (current_user_can('manage_options') || (UserRoles::get_instance())->is_staff_user() || (UserRoles::get_instance())->is_distributor_plus_user()) {
+            return true;
+        } else {
+            // Roles other than distributor plus (admin or staff as well).
+            // Check if product belongs to the distributor plus category
+            if (has_term((Filters::get_instance())->distributor_plus_categories, Filters::CATEGORY, $product_id)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
     }
 
     /**
