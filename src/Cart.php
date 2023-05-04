@@ -24,6 +24,9 @@ class Cart
 
     public function hide_view_cart_button()
     {
+        if (!class_exists('WooCommerce')) {
+            return;
+        }
 
         if (is_cart()) {
 ?>
@@ -46,6 +49,10 @@ class Cart
 
     public function send_user_to_tech_pub_page()
     {
+        if (!class_exists('WooCommerce')) {
+            return;
+        }
+
         if (is_shop() || is_product_category() || is_product_tag() || is_product()) {
             wp_redirect('/' . TechPubLib::TECH_PUB_PAGE);
             exit();
