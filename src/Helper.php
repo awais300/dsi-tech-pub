@@ -15,13 +15,20 @@ class Helper extends Singleton
     /**
      * Force download a file.
      * 
-     * @param  string $url
+     * @param  string $media_id The WP attachment ID.
      */
-    public function force_download($url)
+    public function force_download($media_id)
     {
-        if (empty($url)) {
+        $url = wp_get_attachment_url($media_id);
+        $media_path = get_attached_file($media_id);
+
+        if (empty($media_id) || empty($url) || empty($media_path)) {
             return;
         }
+
+        error_log('downloading file');
+        error_log($url);
+        error_log($media_path);
 
         header('Content-Description: File Transfer');
         header('Expires: 0');
@@ -30,7 +37,7 @@ class Helper extends Singleton
         header('Content-type: application/octet-stream');
         header("Content-Disposition: attachment; filename=" . basename($url));
         ob_end_clean();
-        readfile($url);
+        readfile($media_path);
         exit;
     }
 
