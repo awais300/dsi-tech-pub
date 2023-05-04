@@ -224,7 +224,7 @@ class TechPubLib extends Singleton
             }
 
             if ($this->is_user_has_access($product_id)) {
-                (Helper::get_instance())->force_download($url);
+                (Helper::get_instance())->force_download($media_id);
             } else {
                 $this->unauthorized();
             }
@@ -279,7 +279,7 @@ class TechPubLib extends Singleton
      */
     public function is_product_specific_to_distributor_plus($product_id)
     {
-        if (!is_user_logged_in() || empty($product_id)) {
+        if (empty($product_id)) {
             return false;
         }
 
