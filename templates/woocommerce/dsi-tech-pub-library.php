@@ -120,7 +120,13 @@ if ($is_retail === true) {
 							<?php $access = $tech_pub_lib->is_user_has_access($product->get_id()); ?>
 							<?php if (!is_user_logged_in()) : ?>
 								<div class="instructions">
-									<p><a class="text" href="<?php echo wc_get_account_endpoint_url('dashboard'); ?>">Login</a> as distributor or <a class="text" href="<?php echo wc_get_account_endpoint_url('dashboard'); ?>">register</a> for a retail customer account.</p>
+									
+                                    <?php if ($tech_pub_lib_obj->is_product_specific_to_distributor_plus($product->get_id()) === false) : ?>
+										<p>Distributor Plus Users Only. Please <a class="text" href="/<?php echo TechPubLib::CONTACT_PAGE; ?>">contact us.</a></p>
+									<?php else : ?>
+										<p><a class="text" href="<?php echo wc_get_account_endpoint_url('dashboard'); ?>">Login</a> as distributor or <a class="text" href="<?php echo wc_get_account_endpoint_url('dashboard'); ?>">register</a> for a retail customer account.</p>
+									<?php endif; ?>
+                                    
 								</div>
 							<?php elseif (
 								false === $access &&
